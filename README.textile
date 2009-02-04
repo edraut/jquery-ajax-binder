@@ -13,9 +13,9 @@ h4. In your view
 * if you are using rails *
 <pre><code>
 <%= link_to item.name, item_url(item), :click_binding => "ajax_link" :click_options => %Q`{request_method: 'GET', success_callback: "$('#some_id').show();"}` %>
-</code><pre>
+</code></pre>
 
 * or in plain html *
 <pre><code>
 <a href="http://example.com/restful/route/to/item/74" click_binding="ajax_link" click_options="{request_method: 'GET'}">
-</code><pre>
+</code></pre>
