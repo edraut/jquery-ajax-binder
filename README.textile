@@ -15,9 +15,10 @@ if you are using rails
 <%= javascript_include_tag 'jquery_ajax_binder.js' %>
 
 <%= link_to item.name, item_url(item),
-	:click_binding => "ajax_link",
-	:click_options => %Q`{request_method: 'GET', success_callback: "$('#some_id').show();"}`,
-	:click_success_element => 'dom_id_for_placing_the_result'
+	:ajax_binding => "ajax_link",
+	:ajax_method => 'GET',
+	:ajax_success_callback => "$('#some_id').show();",
+	:ajax_success_element => 'dom_id_for_placing_the_result'
 %>
 </code></pre>
 
@@ -25,7 +26,8 @@ or in plain html
 <pre><code>
 <script type="text/javascript" src="/javascripts/jquery_ajax_binder.js">
 <a href="http://example.com/restful/route/to/item/74"
-	click_binding="ajax_link"
-	click_options="{request_method: 'GET'}"
-	click_success_element="dom_id_for_placing_the_result">
+	ajax_binding="ajax_link"
+	ajax_method='GET'
+	ajax_success_callback="$('#some_id').show();"
+	ajax_success_element="dom_id_for_placing_the_result">
 </code></pre>
