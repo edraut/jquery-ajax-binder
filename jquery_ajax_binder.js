@@ -2,33 +2,34 @@ function bindAjaxEvents(target_document){
 	if(!target_document){
 		target_document = document;
 	}
-	$("[submit_binding='ajax_form']",target_document).unbind('submit', ajaxForm);	
-	$("[submit_binding='ajax_form']",target_document).bind('submit', ajaxForm);
-	$("[click_binding='ajax_link']",target_document).unbind('click', ajaxLink);	
-	$("[click_binding='ajax_link']",target_document).bind('click', ajaxLink);
+	$("[ajax_binding='ajax_form']",target_document).unbind('submit', {element_type:'form'}, ajaxEvent);	
+	$("[ajax_binding='ajax_form']",target_document).bind('submit', {element_type:'form'}, ajaxEvent);
+	$("[ajax_binding='ajax_link']",target_document).unbind('click', {element_type:'link'}, ajaxEvent);	
+	$("[ajax_binding='ajax_link']",target_document).bind('click', {element_type:'link'}, ajaxEvent);
 };
-function ajaxForm(e){
-	our_form = $(e.target);
-	our_options = eval(our_form.attr('submit_options'));
-	$.ajax({
-		type: our_options.request_method,
-		data: our_form.serializeArray(),
+function ajaxEvent(e){
+	our_element = $(e.target);
+	element_type = e.data.element_type;
+	if( element_type == 'link' && (our_element.attr('nodeName').toUpperCase() != 'A') ){
+		our_element = our_element.parents('a');
+	};
+	our_parameters = {
+		type: our_element.attr('ajax_method'),
 		dataType: 'html',
-		url: our_form.attr('action'),
 		beforeSend: function(XMLHttpRequest) {
-			if(our_options.before_callback){
-				eval(our_options.before_callback);
+			if(our_element.attr('ajax_before_callback')){
+				eval(our_element.attr('ajax_before_callback'));
 			};
-			if(our_options.confirm) {
-				return confirm(our_options.confirm);
+			if(our_element.attr('ajax_confirm')) {
+				return confirm(our_element.attr('ajax_confirm'));
 			} else {
 				return true;
 			};
 			
 		},
 		error: function(XMLHttpRequest, textStatus, errorThrown) {
-			if(jquery_error_element = our_form.attr('submit_error_element')){
-				switch( our_form.attr('submit_error_placement') ) {
+			if(jquery_error_element = our_element.attr('ajax_error_element')){
+				switch( our_element.attr('ajax_error_placement') ) {
 					case 'after':
 						$('#' + jquery_error_element).after(XMLHttpRequest.responseText);
 						break;
@@ -53,8 +54,8 @@ function ajaxForm(e){
 			}
 		},
 		success: function(data,textStatus) {
-			if(jquery_success_element = our_form.attr('submit_success_element')){
-				switch( our_form.attr('submit_success_placement') ) {
+			if(jquery_success_element = our_element.attr('ajax_success_element')){
+				switch( our_element.attr('ajax_success_placement') ) {
 					case 'after':
 						$('#' + jquery_success_element).after(data);
 						break;
@@ -75,69 +76,25 @@ function ajaxForm(e){
 						break;
 				}
 			};
-			if(our_options.success_callback){
-				eval(our_options.success_callback);
+			if(our_element.attr('ajax_success_callback')){
+				eval(our_element.attr('ajax_success_callback'));
 			};
 			bindAjaxEvents();
 		}
-	});
+	};
+	switch(element_type){
+		case 'form':
+			our_parameters.data = our_element.serializeArray();
+			our_parameters.url = our_element.attr('action');
+			break;
+		case 'link':
+			our_parameters.url = our_element.attr('href')
+			break;
+	}
+	$.ajax(our_parameters);
 	return false;
 };
 
-function ajaxLink(e){
-	our_link = $(e.target);
-	
-	if( our_link.attr('nodeName').toUpperCase() != 'A'){
-		our_link = our_link.parents('a');
-	};
-	
-	our_options = eval("(" + our_link.attr('click_options') + ")");
-	$.ajax({
-		type: our_options.request_method,
-		dataType: 'html',
-		url: our_link.attr('href'),
-		beforeSend: function(XMLHttpRequest) {
-			if(our_options.before_callback){
-				eval(our_options.before_callback);
-			};
-			if(our_options.confirm) {
-				return confirm(our_options.confirm);
-			} else {
-				return true;
-			};
-			
-		},
-		success: function(data,textStatus) {
-			if(jquery_success_element = our_link.attr('click_success_element')){
-				switch( our_link.attr('click_success_placement') ) {
-					case 'after':
-						$('#' + jquery_success_element).after(data);
-						break;
-					case 'html':
-						$('#' + jquery_success_element).html(data);
-						break;
-					case 'before':
-						$('#' + jquery_success_element).before(data);
-						break;
-					case 'prepend':
-						$('#' + jquery_success_element).prepend(data);
-						break;
-					case 'append':
-						$('#' + jquery_success_element).append(data);
-						break;
-					default:
-						$('#' + jquery_success_element).html(data);
-						break;
-				}
-			};
-			if(our_options.success_callback){
-				eval(our_options.success_callback);
-			};
-			bindAjaxEvents();
-		}
-	});
-	return false;
-};
 
 $(document).ready(function() {
 	bindAjaxEvents();
