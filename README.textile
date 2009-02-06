@@ -24,10 +24,14 @@ if you are using rails
 
 or in plain html
 <pre><code>
-<script type="text/javascript" src="/javascripts/jquery_ajax_binder.js">
+<script type="text/javascript" src="/javascripts/jquery_ajax_binder.js"/>
 <a href="http://example.com/restful/route/to/item/74"
 	ajax_binding="ajax_link"
 	ajax_method='GET'
 	ajax_success_callback="$('#some_id').show();"
 	ajax_success_element="dom_id_for_placing_the_result">
 </code></pre>
+
+h3. License
+This library uses the same licensing as jQuery itself:
+http://docs.jquery.com/License
